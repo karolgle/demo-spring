@@ -3,7 +3,6 @@ package com.example.demospringng6.domain;
 import lombok.*;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -16,10 +15,10 @@ import java.util.List;
 public class CompanyInfo {
 
     @NotNull
-    @Size(min=2, max=30)
+    @Size(min = 2, max = 30)
     private String name;
 
-    @Size(min=3, max=255)
+    @Size(min = 3, max = 255)
     private String address;
 
     @NotNull
@@ -30,6 +29,6 @@ public class CompanyInfo {
     private String email;
     private String phone;
     @NotNull
-    @Size(min=1)
+    @Size(min = 1)
     private List<String> owners;
 }

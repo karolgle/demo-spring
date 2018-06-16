@@ -22,10 +22,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 public class CompanyController {
 
-    private static  final Logger LOGGER = LoggerFactory.getLogger(CompanyController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyController.class);
 
     private final CompanyService companyService;
-
 
 
     @Autowired
@@ -33,21 +32,30 @@ public class CompanyController {
         this.companyService = companyService;
     }
 
+    @GetMapping()
+    public String index() {
+        return "Greetings from Spring Boot!";
+    }
+
     @GetMapping("/companies/{name}")
     ResponseEntity<?> getCompany(@PathVariable("name") String companyName) {
 
         Optional<Company> company = companyService.getCompanyByName(companyName);
 
-        if(company.isPresent()){
+        if (company.isPresent()) {
             return ResponseEntity.ok(CompanyHelper.convertToCompanyInfo(company.get()));
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound()
+                             .build();
     }
 
     @GetMapping("/companies")
     ResponseEntity<?> getCompanies() {
-        return ResponseEntity.ok(companyService.getAllCompanies().stream().map(Company::getName).collect(Collectors.toList()));
+        return ResponseEntity.ok(companyService.getAllCompanies()
+                                               .stream()
+                                               .map(Company::getName)
+                                               .collect(Collectors.toList()));
     }
 
     @PostMapping("/companies")
@@ -61,34 +69,39 @@ public class CompanyController {
                                                     .getDefaultMessage());
         }
 
-        if(existingCompany.isPresent()){
+        if (existingCompany.isPresent()) {
             LOGGER.info("Company with such name already exists!!!");
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                                 .build();
         }
 
-        CompanyInfo savedCompanyInfo =  CompanyHelper.convertToCompanyInfo(companyService.save(companyInfo)) ;
+        CompanyInfo savedCompanyInfo = CompanyHelper.convertToCompanyInfo(companyService.save(companyInfo));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCompanyInfo);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(savedCompanyInfo);
     }
 
     @PutMapping("/companies")
     ResponseEntity<?> updateCompany(@RequestBody @Valid CompanyInfo companyInfo, BindingResult bindingResult) {
         Optional<Company> existingCompany = companyService.getCompanyByName(companyInfo.getName());
 
-        if(!existingCompany.isPresent()){
+        if (!existingCompany.isPresent()) {
             LOGGER.info("Company not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .build();
         }
 
         Company companyToUpdate = Company.builder()
-                                         .id(existingCompany.get().getId())
-                                         .name(existingCompany.get().getName())
+                                         .id(existingCompany.get()
+                                                            .getId())
+                                         .name(existingCompany.get()
+                                                              .getName())
                                          .address(companyInfo.getAddress())
                                          .city(companyInfo.getCity())
                                          .country(companyInfo.getCountry())
                                          .email(companyInfo.getEmail())
                                          .phone(companyInfo.getPhone())
-                                         .owners(companyInfo.getOwners())
+                                         .owners(CompanyHelper.ownersToString(companyInfo.getOwners()))
                                          .build();
 
         CompanyInfo savedCompanyInfo = CompanyHelper.convertToCompanyInfo(companyService.save(companyToUpdate));
@@ -100,33 +113,46 @@ public class CompanyController {
     ResponseEntity<?> addOwner(@PathVariable("name") String companyName, @RequestBody String newOwner) {
         Optional<Company> existingCompany = companyService.getCompanyByName(companyName);
 
-        if(!existingCompany.isPresent()){
+        if (!existingCompany.isPresent()) {
             LOGGER.info("Company with such name does not exist!!!");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .build();
         }
 
 
-
-        if(existingCompany.get().getOwners().stream().noneMatch(owner-> owner.equalsIgnoreCase(newOwner))){
+        if (CompanyHelper.ownersToList(existingCompany.get()
+                                                      .getOwners())
+                         .stream()
+                         .noneMatch(owner -> owner.equalsIgnoreCase(newOwner))) {
             List<String> ownersList = new ArrayList<String>();
             ownersList.add(newOwner);
-            ownersList.addAll(existingCompany.get().getOwners());
+            ownersList.addAll(CompanyHelper.ownersToList(existingCompany.get()
+                                                                        .getOwners()));
 
             Company companyToUpdate = Company.builder()
-                                             .id(existingCompany.get().getId())
-                                             .name(existingCompany.get().getName())
-                                             .address(existingCompany.get().getAddress())
-                                             .city(existingCompany.get().getCity())
-                                             .country(existingCompany.get().getCountry())
-                                             .email(existingCompany.get().getEmail())
-                                             .phone(existingCompany.get().getPhone())
-                                             .owners(ownersList)
+                                             .id(existingCompany.get()
+                                                                .getId())
+                                             .name(existingCompany.get()
+                                                                  .getName())
+                                             .address(existingCompany.get()
+                                                                     .getAddress())
+                                             .city(existingCompany.get()
+                                                                  .getCity())
+                                             .country(existingCompany.get()
+                                                                     .getCountry())
+                                             .email(existingCompany.get()
+                                                                   .getEmail())
+                                             .phone(existingCompany.get()
+                                                                   .getPhone())
+                                             .owners(CompanyHelper.ownersToString(ownersList))
                                              .build();
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(CompanyHelper.convertToCompanyInfo(companyService.save(companyToUpdate))) ;
+            return ResponseEntity.status(HttpStatus.CREATED)
+                                 .body(CompanyHelper.convertToCompanyInfo(companyService.save(companyToUpdate)));
         }
 
 
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                             .build();
     }
 }

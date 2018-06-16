@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -124,14 +123,14 @@ public class CompanyControllerIntegTest {
 
         // given
         Company invalidCompany = Company.builder()
-                                          .id(3)
-                                          .name("Compan1")
+                                          .id(3L)
+                                          .name("Company1")
                                           .address("Ad")
                                           .city("New City")
                                           .country("New Country")
                                           .email("new.email@aaa.pl")
                                           .phone("+48 44444444")
-                                          .owners(Arrays.asList("Joe Briks", "Mary Bee"))
+                                          .owners("Joe Briks; Mary Bee")
                                           .build();
 
         given(companyService.getCompanyByName(any(String.class))).willReturn(Optional.empty());
@@ -151,14 +150,14 @@ public class CompanyControllerIntegTest {
 
         // given
         Company invalidCompany = Company.builder()
-                                        .id(3)
+                                        .id(3L)
                                         .name("Compan1")
                                         .address("Address")
                                         .city("New City")
                                         .country("New Country")
                                         .email("new.email@aaa.pl")
                                         .phone("+48 44444444")
-                                        .owners(new ArrayList<>())
+                                        .owners("")
                                         .build();
 
         given(companyService.getCompanyByName(any(String.class))).willReturn(Optional.empty());
@@ -170,7 +169,7 @@ public class CompanyControllerIntegTest {
 
         // then
         assertThat(createCompanyResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(createCompanyResponse.getBody()).isEqualTo("size must be between 1 and 2147483647");
+        assertThat(createCompanyResponse.getBody()).isEqualTo("must not be null");
     }
 
     @Test
@@ -178,14 +177,14 @@ public class CompanyControllerIntegTest {
 
         // given
         Company invalidCompany = Company.builder()
-                                        .id(3)
+                                        .id(3L)
                                         .name("C")
                                         .address("Address")
                                         .city("New City")
                                         .country("New Country")
                                         .email("new.email@aaa.pl")
                                         .phone("+48 44444444")
-                                        .owners(Arrays.asList("Joe Briks", "Mary Bee"))
+                                        .owners("Joe Briks;Mary Bee")
                                         .build();
 
         given(companyService.getCompanyByName(any(String.class))).willReturn(Optional.empty());
@@ -205,14 +204,14 @@ public class CompanyControllerIntegTest {
 
         // given
         Company invalidCompany = Company.builder()
-                                        .id(3)
+                                        .id(3L)
                                         .name("Company 1")
                                         .address("Address")
                                         .city("New City")
                                         .country("New Country")
                                         .email("new.email")
                                         .phone("+48 44444444")
-                                        .owners(Arrays.asList("Joe Briks", "Mary Bee"))
+                                        .owners("Joe Briks;Mary Bee")
                                         .build();
 
         given(companyService.getCompanyByName(any(String.class))).willReturn(Optional.empty());
@@ -232,14 +231,14 @@ public class CompanyControllerIntegTest {
 
         // given
         Company companyForUpdate = Company.builder()
-                                          .id(2)
+                                          .id(2L)
                                           .name("Company Name 2")
                                           .address("New Address 2")
                                           .city("New City")
                                           .country("New Country")
                                           .email("new.email@aaa.pl")
                                           .phone("+48 44444444")
-                                          .owners(Arrays.asList("Joe Briks", "Mary Bee"))
+                                          .owners("Joe Briks;Mary Bee")
                                           .build();
 
         CompanyInfo updateCompanyInfo = CompanyHelper.convertToCompanyInfo(companyForUpdate);
@@ -261,25 +260,25 @@ public class CompanyControllerIntegTest {
 
         // given
         Company companyForUpdate = Company.builder()
-                                          .id(2)
+                                          .id(2L)
                                           .name("Company Name 2")
                                           .address("New Address 2")
                                           .city("New City")
                                           .country("New Country")
                                           .email("new.email@aaa.pl")
                                           .phone("+48 44444444")
-                                          .owners(Arrays.asList("Joe Briks", "Mary Bee"))
+                                          .owners("Joe Briks;Mary Bee")
                                           .build();
 
         Company alteredCompany = Company.builder()
-                                  .id(2)
+                                  .id(2L)
                                   .name("Company Name 2")
                                   .address("New Address 2")
                                   .city("New City")
                                   .country("New Country")
                                   .email("new.email@aaa.pl")
                                   .phone("+48 44444444")
-                                  .owners(Arrays.asList("New Owner Kate Mentis", "Joe Briks", "Mary Bee"))
+                                  .owners("New Owner Kate Mentis;Joe Briks;Mary Bee")
                                   .build();
 
 
@@ -302,25 +301,25 @@ public class CompanyControllerIntegTest {
 
     private void prepareTestData() {
         Company company1 = Company.builder()
-                                  .id(1)
+                                  .id(1L)
                                   .name("Company Name 1")
                                   .address("Address 1")
                                   .city("Vien")
                                   .country("Poland")
                                   .email("aaa@aaa.pl")
                                   .phone("+48 556 222 333")
-                                  .owners(Arrays.asList("Jenny Bliz", "John Fritz"))
+                                  .owners("Jenny Bliz;John Fritz")
                                   .build();
 
         Company company2 = Company.builder()
-                                  .id(2)
+                                  .id(2L)
                                   .name("Company Name 2")
                                   .address("Adress 2")
                                   .city("Warsaw")
                                   .country("Poland")
                                   .email("aaa@aaa.pl")
                                   .phone("+48 123456798")
-                                  .owners(Arrays.asList("Joe Klis", "Mary Bee"))
+                                  .owners("Joe Klis;Mary Bee")
                                   .build();
 
         this.testCompanies = Arrays.asList(company1, company2);

@@ -3,34 +3,34 @@ package com.example.demospringng6.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.List;
 
 
-@Builder(toBuilder = true)
+@Builder
 @ToString
 @Getter
 @Entity
 @NoArgsConstructor(force = true) //sets values to its defaults
-@RequiredArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class Company {
 
     @Id
     @GeneratedValue
-    private final int id;
-
+    private Long id;
 
     @NonNull
-    @Column(unique=true)
-    @Size(min=2, max=30)
+    @Column(unique = true)
+    @Size(min = 2, max = 255)
     private final String name;
     @NonNull
-    @Size(min=3, max=255)
+    @Size(min = 3, max = 255)
     private final String address;
     @NonNull
     private final String city;
@@ -41,10 +41,7 @@ public class Company {
 
     private final String phone;
 
-    @NonNull
-    @Embedded
-    @ElementCollection
-    @Size(min=1)
-    private final List<String> owners;
+    @NotEmpty
+    private final String owners;
 
 }
